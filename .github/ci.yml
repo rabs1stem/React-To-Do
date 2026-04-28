@@ -1,0 +1,68 @@
+name: ci
+on:
+  push:
+    branches: [main, feature]
+  pull_request:
+    branches: [main]
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install -r requirements.txt
+          pip install flake8 black pytest isort
+      - run: |
+          flake8 .
+          black --check .
+          isort . --check-only
+          pytest -q
+  frontend:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: |
+          cd frontend
+          npm ci
+      - run: |
+          cd frontend
+          npm run lint
+      - run: |
+          cd frontend
+          npm test -- --watchAll=false
+      - run: |
+          cd frontend
+          npm run build
+  docker:
+    needs: [backend, frontend]
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cat > .env <<EOF
+          POSTGRES_DB=${{vars.POSTGRES_DB}}
+          POSTGRES_USER=${{vars.POSTGRES_USER}}
+          POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+          DATABASE_URL=${{secrets.DATABASE_URL}}
+          JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+          SECRET_KEY=${{secrets.SECRET_KEY}}
+          EOF
+      - run: docker compose up -d --build
+      - run: sleep 25
+      - run: docker ps
+      - run: curl -fsS http://localhost:81/health || exit 1
+      - if: failure()
+        run: docker compose logs
+      - if: always()
+        run: |
+          rm -f .env
+          docker compose down -v

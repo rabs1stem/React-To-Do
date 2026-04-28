@@ -13,14 +13,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: |
-          pip install -r requirements.txt
-          pip install flake8 black pytest isort
-      - run: |
-          flake8 backend
-          black --check backend
-          isort backend --check-only
-          pytest -q
+      - name: Lint (flake8)
+        run: flake8 backend
+      - name: Format check (black)
+        run: black --check backend
+      - name: Import check (isort)
+        run: isort backend --check-only
+      - name: Tests
+        run: pytest -q
   frontend:
     runs-on: ubuntu-24.04
 

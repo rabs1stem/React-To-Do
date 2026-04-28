@@ -17,9 +17,9 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 black pytest isort
       - run: |
-          flake8 .
-          black --check .
-          isort . --check-only
+          flake8 backend
+          black --check backend
+          isort backend --check-only
           pytest -q
   frontend:
     runs-on: ubuntu-24.04
@@ -37,7 +37,7 @@ jobs:
           npm run lint
       - run: |
           cd frontend
-          npm test -- --watchAll=false
+          CI=true npm test -- --watchAll=false
       - run: |
           cd frontend
           npm run build

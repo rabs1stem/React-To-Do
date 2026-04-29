@@ -91,7 +91,7 @@ jobs:
       - name: Scan backend image
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: backend_app
+          image-ref: reac-backend:latest
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -99,7 +99,7 @@ jobs:
       - name: Scan frontend image
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: frontend_app
+          image-ref: reac-frontend:latest
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true

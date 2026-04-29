@@ -5,26 +5,34 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  backend:
+  secrets:
     runs-on: ubuntu-24.04
-
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+  backend:
+    needs: secrets
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8 black pytest isort
-      - name: Lint (flake8)
-        run: flake8 backend
-      - name: Format check (black)
-        run: black --check backend
-      - name: Import check (isort)
-        run: isort backend --check-only
-      - name: Tests
-        run: pytest -q
+          pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit
+      - name: Ruff checks
+        run: |
+          ruff check backend
+          ruff format --check backend
+      - name: Run tests
+        run: |
+          pytest -n auto --cov=backend --cov-report=term-missing --asyncio-mode=auto -q
   frontend:
     runs-on: ubuntu-24.04
 

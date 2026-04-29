@@ -93,9 +93,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy
       - name: Scan backend image
-        run: trivy image backend_app --severity HIGH,CRITICAL --ignore-unfixed
+        run: trivy image backend_app --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan frontend image
-        run: trivy image frontend_app --severity HIGH,CRITICAL --ignore-unfixed
+        run: trivy image frontend_app --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
 
       - if: always()
         run: |

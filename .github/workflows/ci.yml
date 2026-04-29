@@ -31,8 +31,14 @@ jobs:
       - name: Ruff checks
         run: ruff check backend
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest -n auto --cov=backend --cov-report=term-missing --asyncio-mode=auto -q
+          pytest -n auto \
+          --cov=backend \
+          --cov-report=term-missing \
+          --asyncio-mode=auto \
+          -q
   frontend:
     runs-on: ubuntu-24.04
     defaults:

@@ -75,12 +75,36 @@ jobs:
           JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
           SECRET_KEY=${{secrets.SECRET_KEY}}
           EOF
+      - name: Validate compose config
+        run: docker compose config
       - run: docker compose up -d --build
-      - run: sleep 25
-      - run: docker ps
-      - run: curl -fsS http://localhost:81/health || exit 1
+      - run: |
+          for i in {1..30}; do
+            curl -fsS http://localhost:81/health && exit 0
+            sleep 2
+          done
+          exit 1
+      - if: success()
+        run: docker ps
       - if: failure()
         run: docker compose logs
+      - name: Scan backend image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: backend_app
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 0
+      - name: Scan frontend image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: frontend_app
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 0
+
       - if: always()
         run: |
           docker compose down -v

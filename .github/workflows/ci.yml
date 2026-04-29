@@ -40,6 +40,7 @@ jobs:
           --asyncio-mode=auto \
           -q
   frontend:
+    needs: secrets
     runs-on: ubuntu-24.04
     defaults:
       run:

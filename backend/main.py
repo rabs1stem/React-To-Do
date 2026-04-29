@@ -1,19 +1,18 @@
 from typing import List
 
+import crud
+import models
+import schemas
 import uvicorn
+from database import SessionLocal, engine
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from backend import crud, models, schemas
-from backend.database import SessionLocal, engine
-
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    openapi_url="/api/openapi.json",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc"
 )
 
 origins = [
@@ -96,4 +95,4 @@ def health():
 
 
 if __name__ == "__main__":
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

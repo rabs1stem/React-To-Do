@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint
-        run: npm run lint
+        run: npx eslint src --ext .js,.jsx
       - name: Build test
         run: CI=false npm run build
       - name: Run tests

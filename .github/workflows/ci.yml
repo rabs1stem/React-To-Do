@@ -97,7 +97,7 @@ jobs:
           ignore-unfixed: true
           exit-code: 0
       - name: Scan frontend image
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: frontend_app
           format: table

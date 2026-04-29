@@ -21,6 +21,7 @@ services:
       - pups
   backend:
     container_name: backend_app
+    image: backend_app
     build:
       context: .
       dockerfile: ./backend/Dockerfile
@@ -43,6 +44,7 @@ services:
       - pups
   frontend:
     container_name: frontend_app
+    image: frontend_app
     build:
       context: ./frontend
       dockerfile: Dockerfile

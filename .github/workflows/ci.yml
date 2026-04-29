@@ -88,22 +88,15 @@ jobs:
         run: docker ps
       - if: failure()
         run: docker compose logs
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget -qO- https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh
       - name: Scan backend image
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: reac-backend:latest
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: 0
+        run: trivy image reac-backend:latest --severity HIGH,CRITICAL --ignore-unfixed
       - name: Scan frontend image
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: reac-frontend:latest
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: 0
+        run: trivy image reac-frontend:latest --severity HIGH,CRITICAL --ignore-unfixed
 
       - if: always()
         run: |

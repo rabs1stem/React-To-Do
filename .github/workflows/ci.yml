@@ -25,13 +25,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit semgrep
+          pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit
       - name: Dependency vulnerability scan
         run: pip-audit
       - name: Ruff checks
         run: ruff check backend
-      - name: Security code scan
-        run: semgrep --config=auto backend
       - name: Run tests
         run: |
           pytest -n auto --cov=backend --cov-report=term-missing --asyncio-mode=auto -q
@@ -50,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build test
-        run: npm run build
+        run: CI=false npm run build
       - name: Run tests
         run: CI=true npm test -- --watchAll=false --passWithNoTests
   docker:

@@ -89,7 +89,7 @@ jobs:
       - if: failure()
         run: docker compose logs
       - name: Scan backend image
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: backend_app
           format: table

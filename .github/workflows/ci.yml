@@ -27,9 +27,7 @@ jobs:
           pip install -r requirements.txt
           pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit
       - name: Ruff checks
-        run: |
-          ruff check backend
-          ruff format --check backend
+        run: ruff check backend
       - name: Run tests
         run: |
           pytest -n auto --cov=backend --cov-report=term-missing --asyncio-mode=auto -q

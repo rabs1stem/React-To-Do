@@ -1,4 +1,4 @@
-from tests.conftest import client
+from conftest import client
 
 
 def test_health():

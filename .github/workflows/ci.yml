@@ -32,13 +32,13 @@ jobs:
       - name: Dependency vulnerability scan
         run: pip-audit
       - name: Ruff checks
-        run: ruff check backend
+        run: ruff check .
       - name: Run tests
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/backend
         run: |
           pytest -n auto \
-          --cov=backend \
+          --cov=. \
           --cov-report=term-missing \
           --asyncio-mode=auto \
           -q

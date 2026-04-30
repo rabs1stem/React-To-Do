@@ -5,13 +5,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
 COPY requirements.txt .
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-&& groupadd --system app \
+RUN groupadd --system app \
 && useradd --system --gid app --create-home --home-dir /home/app app \
-&& pip install -r requirements.txt \
-&& rm -rf /var/lib/apt/lists/*
+&& pip install -r requirements.txt
 COPY --chown=app:app . .
 USER app
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=4 CMD curl -fsS http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "--workers", "1", "--bind", "0.0.0.0:8000"]

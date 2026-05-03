@@ -6,8 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY requirements.txt .
 RUN groupadd --system app \
-&& useradd --system --gid app --create-home --home-dir /home/app app \
-&& pip install -r requirements.txt
+ && useradd --system --gid app app \
+ && pip install --no-compile -r requirements.txt
 COPY --chown=app:app . .
 USER app
 EXPOSE 8000

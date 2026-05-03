@@ -9,8 +9,6 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI(
     openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc"
 )

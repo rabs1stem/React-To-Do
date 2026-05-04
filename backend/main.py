@@ -1,7 +1,6 @@
 from typing import List
 
 import crud
-import models
 import schemas
 import uvicorn
 from database import SessionLocal

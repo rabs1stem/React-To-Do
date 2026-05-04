@@ -4,7 +4,7 @@ import crud
 import models
 import schemas
 import uvicorn
-from database import SessionLocal, engine
+from database import SessionLocal
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session

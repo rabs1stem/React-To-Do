@@ -4,3 +4,9 @@ repos:
     hooks:
       - id: gitleaks
         args: ["--config=.gitleaks.toml"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [--fix]

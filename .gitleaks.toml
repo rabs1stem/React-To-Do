@@ -1,0 +1,5 @@
+[allowlist]
+description = "Allow encrypted SealedSecret payload"
+paths = [
+  '''k8s/sealed-secret.yaml'''
+]

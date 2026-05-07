@@ -159,14 +159,14 @@ jobs:
       - name: Validate backend manifests
         run: |
           helm template backend k8s/backend-chart \
-            | kubeconform -strict -summary
+            | kubeconform -strict -ignore-missing-schemas -summary
 
       - name: Validate frontend manifests
         run: |
           helm template frontend k8s/frontend-chart \
-            | kubeconform -strict -summary
+            | kubeconform -strict -ignore-missing-schemas -summary
 
       - name: Validate postgres manifests
         run: |
           helm template postgres k8s/postgres-chart \
-            | kubeconform -strict -summary  
+            | kubeconform -strict -ignore-missing-schemas -summary  

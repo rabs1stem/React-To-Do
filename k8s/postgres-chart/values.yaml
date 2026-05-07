@@ -1,0 +1,49 @@
+name: postgres
+namespace: reac
+
+replicaCount: 1
+
+terminationGracePeriodSeconds: 60
+
+image:
+  repository: postgres
+  tag: "16.10-alpine"
+  pullPolicy: "IfNotPresent"
+
+container:
+  port: 5432
+
+service:
+  name: postgres
+  port: 5432
+
+secret:
+  name: reac-secret
+
+probes:
+  startup:
+    failureThreshold: 30
+    periodSeconds: 5
+
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 3
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+persistence:
+  accessMode: "ReadWriteOnce"
+  size: "5Gi"

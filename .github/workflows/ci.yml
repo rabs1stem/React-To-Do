@@ -17,6 +17,20 @@ jobs:
   backend:
     needs: secrets
     runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: todo_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     defaults:
       run:
         working-directory: backend
@@ -36,6 +50,10 @@ jobs:
         run: pip-audit
       - name: Ruff checks
         run: ruff check .
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todo_db
+        run: alembic upgrade head
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
@@ -107,3 +125,48 @@ jobs:
         run: |
           docker compose down -v
           rm -f .env
+          
+  kubernetes:
+    needs: [docker]
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+      - name: Install kubeconform
+        run: |
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+          | tar xz
+          sudo mv kubeconform /usr/local/bin/
+      - name: Helm lint backend
+        run: helm lint k8s/backend-chart
+
+      - name: Helm lint frontend
+        run: helm lint k8s/frontend-chart
+
+      - name: Helm lint postgres
+        run: helm lint k8s/postgres-chart
+      
+      - name: Render backend manifests
+        run: helm template backend k8s/backend-chart
+
+      - name: Render frontend manifests
+        run: helm template frontend k8s/frontend-chart
+
+      - name: Render postgres manifests
+        run: helm template postgres k8s/postgres-chart      
+      - name: Validate backend manifests
+        run: |
+          helm template backend k8s/backend-chart \
+            | kubeconform -strict -summary
+
+      - name: Validate frontend manifests
+        run: |
+          helm template frontend k8s/frontend-chart \
+            | kubeconform -strict -summary
+
+      - name: Validate postgres manifests
+        run: |
+          helm template postgres k8s/postgres-chart \
+            | kubeconform -strict -summary  

@@ -1,0 +1,60 @@
+name: frontend
+namespace: reac
+
+replicaCount: 2
+revisionHistoryLimit: 3
+
+terminationGracePeriodSeconds: 30
+
+image:
+  repository: ghcr.io/rabs1stem/reac-frontend
+  tag: "v1"
+  pullPolicy: "Always"
+
+container:
+  port: 80
+
+service:
+  type: "ClusterIP"
+  port: 80
+
+strategy:
+  maxUnavailable: 0
+  maxSurge: 1
+
+probes:
+  path: "/"
+
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
+
+ingress:
+  name: reac-ingress
+
+  className: nginx
+
+  host: localhost
+
+  tlsSecret: app-example-com-tls
+
+frontend:
+  serviceName: frontend
+  servicePort: 80
+
+backend:
+  serviceName: backend
+  servicePort: 8000

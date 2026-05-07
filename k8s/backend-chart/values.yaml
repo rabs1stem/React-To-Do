@@ -1,0 +1,59 @@
+name: backend
+namespace: reac
+
+replicaCount: 2
+revisionHistoryLimit: 3
+
+terminationGracePeriodSeconds: 30
+
+image:
+  repository: ghcr.io/rabs1stem/reac-backend
+  tag: "v1"
+  pullPolicy: "Always"
+
+container:
+  port: 8000
+  workers: 1
+
+service:
+  type: "ClusterIP"
+  port: 8000
+
+secret:
+  name: reac-secret
+
+strategy:
+  maxUnavailable: 0
+  maxSurge: 1
+
+probes:
+  path: "/health"
+
+  startup:
+    failureThreshold: 30
+    periodSeconds: 5
+
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+  liveness:
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 3
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+
+  cpuUtilization: 70

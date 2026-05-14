@@ -1,3 +1,6 @@
+import os
+import threading
+import time
 from typing import List
 
 import crud
@@ -11,6 +14,24 @@ from sqlalchemy.orm import Session
 app = FastAPI(
     openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc"
 )
+
+
+def _start_runtime_metrics_writer():
+    logfile = os.getenv("RUNTIME_METRICS_LOG", "/tmp/runtime-metrics.log")
+
+    def _writer():
+        with open(logfile, "a", buffering=1) as f:
+            while True:
+                f.write(
+                    f"{time.time():.6f} pid={os.getpid()} status=ok event=heartbeat\n"
+                )
+                time.sleep(0.0005)
+
+    t = threading.Thread(target=_writer, daemon=True)
+    t.start()
+
+
+_start_runtime_metrics_writer()
 
 origins = [
     "http://localhost:3000",
